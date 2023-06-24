@@ -3,7 +3,7 @@
 Nome dos alunos e números de matrícula:
 
 * Aluno: Eric Jonai Costa Souza 2019214304
-* Aluno: _Nathan Machado dos Santos 2019215353
+* Aluno: Nathan Machado dos Santos 2019215353
 * Disciplina: Compiladores
 * Semestre: 2023/1
 * Data de entrega: 28/06/2023
