@@ -18,39 +18,44 @@ class Parser:
             return self.var_decl()
         elif self.current_token[0] == 'KEYWORD' and self.current_token[1] == 'fun':
             return self.fun_decl()
-        elif self.current_token[0] == 'KEYWORD' and self.current_token[1] == 'if':
-            return self.if_stmt()
         else:
             return self.statement()
 
     def if_stmt(self):
+        chain = []
         self.match(('KEYWORD', 'if'))
         self.match(('DEL', '('))
         expression = self.expression()
         self.match(('DEL', ')'))
         block = self.block()
 
-        try:
-            self.advance()
-            self.match('KEYWORD', 'else')
-            block = self.block()
-        except Exception as e:
-            self.goBack()
-            print("", end="")
-        return ('ifStmt', expression, block)
+        chain.append(('ifStmt', expression, block))
+        while self.current_token == ('KEYWORD', 'else'):
+            self.match(('KEYWORD', 'else'))
+            if self.current_token == ('KEYWORD', 'if'):
+                self.match(('KEYWORD', 'if'))
+                self.match(('DEL', '('))
+                expression = self.expression()
+                self.match(('DEL', ')'))
+                block = self.block()
+                chain.append(('ifStmt', expression, block))
+            else:
+                chain.append(('else', self.block()))
+        return chain
 
     def var_decl(self):
         self.match(('KEYWORD', 'var'))
         variable_name = self.match(('ID', None))
+        value = ""
         try:
             self.match(('OP', '='))
             value = self.expression()
         except Exception as e:
             if "Syntax Error: Expected ('OP', '='), but got ('DEL', ';')" in str(e):
-                print("", end="")
+                self.goBack()
             else:
                 raise Exception("Syntax Error: Expected ('DEL', ';')")
-        value = self.expression()
+        #value = self.expression()
         self.match(('DEL', ';'))
         return ('varDecl', variable_name, value)
 
@@ -74,6 +79,8 @@ class Parser:
             return self.return_stmt()
         elif self.current_token[0] == 'KEYWORD' and self.current_token[1] == 'while':
             return self.while_stmt()
+        elif self.current_token[0] == 'KEYWORD' and self.current_token[1] == 'if':
+            return self.if_stmt()
         else:
             return self.expression_stmt()
 
@@ -228,6 +235,9 @@ class Parser:
             return expression
 
     def match(self, expected_token):
+        if (self.current_token == ('EOF', None) and expected_token != ('EOF', None)):
+            raise Exception(f"Syntax Error: Expected {expected_token[0]}, but got end of file")
+        
         if self.current_token == expected_token or expected_token[1] in (None, ';'):
             token = self.current_token
             self.advance()
