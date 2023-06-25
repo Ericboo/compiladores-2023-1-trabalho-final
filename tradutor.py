@@ -60,20 +60,17 @@ def translate_to_python(tree, indentation_level=0):
         expression = translate_to_python(tree[1], indentation_level)
         return f'{indent}{expression}'
     
-    elif node_type in ('assignment', 'addition', 'multiplication', 'equality', 'comparison', 'logicAnd', 'LogicOr'):
-        left = ""
-        right = ""
-        operator = ""
-        if node_type == 'assignment':
-            left = translate_to_python(tree[1], indentation_level)
-            right = translate_to_python(tree[2], indentation_level)
-            operator = "="
-        else:   
-            left = translate_to_python(tree[2], indentation_level)
-            right = translate_to_python(tree[3], indentation_level)
-            operator = tree[1][1]
+    elif node_type in ('addition', 'multiplication', 'equality', 'comparison', 'logicAnd', 'LogicOr'):
+        left = translate_to_python(tree[2], indentation_level)
+        right = translate_to_python(tree[3], indentation_level)
+        operator = tree[1][1]
         return f'{left} {operator} {right}'
-    
+
+    elif node_type == 'assignment':
+        left = translate_to_python(tree[1], indentation_level)
+        right = translate_to_python(tree[2], indentation_level)
+        return f'{left} = {right}'  
+
     elif node_type in ('logicNot', 'unary'):
         expression = translate_to_python(tree[2], indentation_level)
         operator = tree[1][1]
