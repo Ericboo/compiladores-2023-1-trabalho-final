@@ -17,7 +17,7 @@ def translate_to_python(tree, indentation_level=0):
             if (elif_block[0] != 'else'):
                 condition = translate_to_python(elif_block[1], indentation_level)
                 block = translate_to_python(elif_block[2], indentation_level + 1)
-                result += f'\n{indent}else if {condition}:\n{block}'
+                result += f'\n{indent}elif {condition}:\n{block}'
             else:
                 condition = ""
                 block = translate_to_python(elif_block[1], indentation_level + 1)
