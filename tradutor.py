@@ -1,8 +1,10 @@
 def translate_to_python(tree, indentation_level=0):
     node_type = tree[0]
     indent = '    ' * indentation_level
-    node_type = tree[0]
-
+    old_tree = tree
+    if type(node_type) == tuple:
+        node_type = node_type[0]
+        tree = tree[0]
     if node_type == 'program':
         statements = [translate_to_python(stmt, indentation_level) for stmt in tree[1]]
         return '\n'.join(statements)
@@ -11,10 +13,15 @@ def translate_to_python(tree, indentation_level=0):
         condition = translate_to_python(tree[1], indentation_level)
         block = translate_to_python(tree[2], indentation_level + 1)
         result = f'{indent}if {condition}:\n{block}'
-        for elif_block in tree[3:]:
-            condition = translate_to_python(elif_block[1], indentation_level)
-            block = translate_to_python(elif_block[2], indentation_level + 1)
-            result += f'\n{indent}else if {condition}:\n{block}'
+        for elif_block in old_tree[1:]:
+            if (elif_block[0] != 'else'):
+                condition = translate_to_python(elif_block[1], indentation_level)
+                block = translate_to_python(elif_block[2], indentation_level + 1)
+                result += f'\n{indent}else if {condition}:\n{block}'
+            else:
+                condition = ""
+                block = translate_to_python(elif_block[1], indentation_level + 1)
+                result += f'\n{indent}else:\n{block}'
         return result
 
     elif node_type == 'else':

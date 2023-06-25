@@ -24,7 +24,7 @@ source_code = """
 tokens = LexicalAnalyzer(source_code)
 parser = Parser(tokens)
 code = parser.parse()
-print(code)
+#print(code)
 print(translate_to_python(code))
 
 
