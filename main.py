@@ -1,5 +1,7 @@
 from lexico import LexicalAnalyzer
 from sintatico import Parser
+from tradutor import translate_to_python
+
 
 source_code = """
     fun getSum(a, b) {
@@ -21,6 +23,8 @@ source_code = """
 
 tokens = LexicalAnalyzer(source_code)
 parser = Parser(tokens)
-print(parser.parse())
+code = parser.parse()
+print(code)
+print(translate_to_python(code))
 
 
